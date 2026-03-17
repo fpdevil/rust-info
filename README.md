@@ -3036,15 +3036,45 @@ When it is mentioned that `Rust` macro's are hygenic, it means that the variable
 ## Declarative Macros with macro_rules!
 Declarative macros use pattern matching to transform code and they are defined using the `macro_rules!` syntax as below:
 ```rust
-// syntax to declare macros in rust
+/// here is the syntax to declare macros in rust
 macro_rules! a_macro {
 	( ) => { };
 //	^^^    ^^^
 //	 |      └── body of the rule (transcriber)
 //	 └── the parameters of the rule (matcher)
 }
+```
 
+>[!NOTE]
+> Macro rules
+> 1. Every `macro` should have a name, and one or more rules.
+> 2. Each rule will have two parts:
+>    + a `matcher` describing the syntax that it matches
+>    + a `transcriber` describing the syntax that will replace a successfully matched invocation.
+> 3. `macros` can expand to _expressions_, _statements_, _items_
+>    (including traits, impls, and foreign items), types, or patterns.
+   
+Here is the standard format of a declarative macro matching these rules:
 
+```bash
+macro_rules! <macro_name> {
+    (<first_matcher_rule>) => {
+        <first_transcriber_rule>
+    };
+    
+    (second_matcher_rule>) => {
+        <second_transcriber_rule>
+    };
+    // ...
+    (nth_matcher_rule>) => {
+        <nth_transcriber_rule>
+    };
+}
+```
+
+Which takes the below form in actual rust code
+```rust
+/// declarative macro
 macro_rules! $name {
     $rule0 ;
     $rule1 ;
@@ -3052,7 +3082,9 @@ macro_rules! $name {
     $ruleN ;
 }
 ```
-There must be at least one rule, the semicolon after the last rule may be omitted. We can use brackets(`[]`), parentheses(`()`) or braces(`{}`).
+
+There must be at least one rule, the semicolon after the last rule may be omitted.
+We can use brackets(`[]`), parentheses(`()`) or braces(`{}`).
 
 Each rule will have the following form:
 ```rust
@@ -3077,7 +3109,10 @@ If the input matches the _matcher_, the invocation is replaced by the expansion;
 | `block`            | A block of code (e.g., `{ println!("hello"); }`)                    |
 | `item`             | An item (e.g., `functions`, `structs`, `modules`)                   |
 | `meta`             | Meta information (e.g., `attributes`)                               |
+|                    | `derive(Debug, Clone)`, `name = "value"`                            |
 | `tt`               | A single token tree. (e.g., Any token or `(...)`, `[...]`, `{...}`) |
+| `lifetime`         | A lifetime token (e.g., `'a`, `'static`)                            |
+| `vis`              | A visibility qualifier (can be empty) (e.g., `pub`, `pub(crate)`)   |
 
 
 ## Repetitions
