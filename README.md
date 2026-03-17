@@ -103,6 +103,7 @@ The Rust ecosystem consists of many tools, of which the main ones are:
 - `rustup`: the Rust toolchain installer and updater. It is used to install and update `rustc` and `cargo` when new versions of Rust are released.
 
 Here are the current versions:
+
 ```bash
 λ rustc --version
 rustc 1.92.0 (ded5c06cf 2025-12-08)
@@ -3063,19 +3064,21 @@ If the input matches the _matcher_, the invocation is replaced by the expansion;
 
 `Matchers` can also contain `captures`, which allow input to be matched based on some general grammar rules, with the result captured to a metavariable which can then be substituted into the output. `Captures` are written as a dollar (`$`) followed by an identifier, a colon (`:`), and finally the kind of capture which is also called the `fragment-specifier`, which must be one of the following:
 
-> [!NOTE]
-> `expr`: An expression (e.g., `1 + 2`, `foo()`, `bar.baz`, `vec![1,2,3]`)
-> `ident`: An identifier (e.g., `variable names`, `function names`)
-> `literal`: A literal value (e.g., `42`, `"hello"`, `true`)
 
-> `ty`: A type (e.g., `i32`, `String`, `Vec<T>`)
-> `pat`: A pattern (e.g., `Some(x)`, `_`, `1..=9`)
-> `path`: A path (e.g., `std::collections::HashMap`)
-> `stmt`: A statement (e.g., `let x = 1;`)
-> `block`: A block of code (e.g., ``{ println!("hello"); }``)
-> `item`: An item (e.g., `functions`, `structs`, `modules`)
-> `meta`: Meta information (e.g., `attributes`)
-> `tt`: A single token tree. (e.g., Any token or `(...)`, `[...]`, `{...}`)
+| **Type Specifier** | **Description**                                                     |
+|--------------------|---------------------------------------------------------------------|
+| `expr`             | An expression (e.g., `1 + 2`, `foo()`, `bar.baz`, `vec![1,2,3]`)    |
+| `ident`            | An identifier (e.g., `variable names`, `function names`)            |
+| `literal`          | A literal value (e.g., `42`, `"hello"`, `true`)                     |
+| `ty`               | A type (e.g., `i32`, `String`, `Vec<T>`)                            |
+| `pat`              | A pattern (e.g., `Some(x)`, `_`, `1..=9`)                           |
+| `path`             | A path (e.g., `std::collections::HashMap`)                          |
+| `stmt`             | A statement (e.g., `let x = 1;`)                                    |
+| `block`            | A block of code (e.g., `{ println!("hello"); }`)                    |
+| `item`             | An item (e.g., `functions`, `structs`, `modules`)                   |
+| `meta`             | Meta information (e.g., `attributes`)                               |
+| `tt`               | A single token tree. (e.g., Any token or `(...)`, `[...]`, `{...}`) |
+
 
 ## Repetitions
 `Matchers` can contain `repetitions`, which allow a sequence of tokens to be matched. These have the general form
