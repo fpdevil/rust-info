@@ -3023,14 +3023,14 @@ fn main() {
     let y = 9;
     
     // below closures are capturing environment
-    let c1 = |x| x + y;     // identical closure
-    let c2 = |x| x + y;     // identical closure
+    let c1 = |x| x + y;     // identically looking closure
+    let c2 = |x| x + y;     // identically looking closure
     
     let vec_of_closures = vec![c1, c2];
     println!("{}", vec_of_closures[0](5));
 }
 ```
-The aboce code willr eturn below error:
+The aboce code willr return below error:
 ```sh
 error[E0308]: mismatched types
   --> src/main.rs:10:36
