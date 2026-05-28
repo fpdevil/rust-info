@@ -476,6 +476,7 @@ fn main() {
 The `rust` documentation at the link [Copy Trait](https://doc.rust-lang.org/std/marker/trait.Copy.html "Copy Trait") has versatile information describing about `Copy`.
 
 The `Default` trait helps to initialize the values of `Struct` with it's default values as shown below:
+
 ```rust
 #![allow(dead_code)]
 #![allow(unused_variables)]
@@ -552,9 +553,9 @@ Process {
 
 ```rust
 enum HttpResultCode {
-    Ok = 200,
+    Ok       = 200,
     NotFound = 404,
-    Teapot = 418,
+    Teapot   = 418,
 }
 
 let code = HttpResultCode::NotFound;
@@ -857,7 +858,7 @@ Here are the main points which distinguish between *Methods* and *Associated fun
 | instance of the `struct` or `enum`        | any particular  instance and  are called |
 |                                           | on the `type` itself                     |
 | Methods  are defined  within the  `impl`  | `Associated`   functions   are   defined |
-| block  for the  `struct`  or `enum`  and  | within  tje `impl`  block  as well,  but |
+| block  for the  `struct`  or `enum`  and  | within  the `impl`  block  as well,  but |
 | their  first   parameter  is   always  a  | their first parameter is not a reference |
 | reference to the instance of `struct` or  | to the `type`                            |
 | `enum`                                    |                                          |
@@ -1536,23 +1537,36 @@ fn main() {
 
 Had each of the *3* `structs` contained different methods, then we could have preferred a `Struct` instead of `Enum`.
 
-### Option enum
+### Option and Result type enums
 `Rust` does not have the concept of `Null`, `Nil` or `undefined`. Instead, it returns a built-in `enum` called `Option` whose definition is as shown below:
 
 ```rust
-enum Option {
-    Some(value),
-    None
+enum Option<T> {
+    Some(T),
+    None,
+}
+```
+It is typically used for the cases where a value might or might not exist. It has two variants `Some` and `None` and it has to be pattern matched in order to extract the value.
+
+Similar to `Option` there is another type called `Result` which can be used to find whether an operation might succeed or maybe not.
+
+`Result` has below signature:
+```rust
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
 }
 ```
 
-It has two variants `Some` and `None` and it has to be pattern matched in order to extract the value.
+The key difference between `Option` and `Result` is:
++ `Option` holds `Some` or `None` (A value or No value)
++ `Result` holds `Ok` or `Err` (`Ok` result or `Error` result)
 
 ### Result for Error Handling
 In the `std::io` module, we can find the `Result` type definition as below:
 
 ```rust
-pub type ResultT> = Result<T, Error>
+pub type Result<T> = Result<T, Error>
 ```
 
 + The `std::io::Result` is a type alias for the standard `Result` type in `rust`,
@@ -1746,29 +1760,30 @@ Result: Ok(9999)
 
 
 # Strings in Rust
-`Rust’s` string handling mechanism is a bit different from other languages, due to its focus on systems level programming. Strings are re-sizeable data structures and any time we have a data structure of variable size, things can get tricky. That said, `Rust’s` strings also work differently than in some other systems languages like `C`.
+`String` handling mechanism in `rust` is a bit different from other languages, due to `rust's` focus on systems level programming. `Strings` are re-sizeable data structures and any time we have a data structure of variable size, things can get tricky. That said, `Rust’s` strings also work differently than in some other systems languages like `C`.
 
-A `‘string’` is a sequence of Unicode scalar values encoded as a stream of `UTF-8` bytes and all `strings` are guaranteed to be a valid encoding of `UTF-8` sequences. Also, unlike some systems languages, `strings` in `Rust` are not _NULL_ terminated and can contain _NULL_ bytes.
+A `‘String’` is a sequence of Unicode scalar values encoded as a stream of `UTF-8` bytes and all `Strings` are guaranteed to be a valid encoding of `UTF-8` sequences. Also, unlike some systems languages, `Strings` in `Rust` are not _NULL_ terminated and can contain _NULL_ bytes.
 
 `Rust` has two main types of strings: `&str` and `String`.
 
-- `&str`: These are called **‘string slices’**. They have a fixed size and
+- `&str`: These are called **‘string slices’**. These have a fixed size and
   cannot be mutated. It is a reference to a sequence of `UTF-8` bytes.
 
-
 ```rust
+/// example for &str
 let greeting = "Hi Hello!";  // greeting: &'static str
 ```
 
 "Hi Hello!" is a `string literal` and  its type is `&'static str`. A `string literal`
 is a  `string slice` that is  statically allocated, meaning that  it’s saved inside
 our compiled  program, and  exists for  the entire duration  it runs.  The `greeting`
-binding is a reference to this statically allocated string. _Any function expecting a
-string slice will also accept a string literal._
+binding is a reference to this statically allocated string.
+_Any function expecting a string slice will also accept a string literal._
 
 > [!NOTE] Note about str
 > Note that you normally cannot access an `str` directly, but only via `&str` reference.
-> This is because `str` is an `unsized` type requiring additional runtime information to be usable.
+> This is because `str` is an `unsized` type requiring additional runtime information
+> to be usable.
 
 
 - `String`: These are called **String literals** and they can span multiple
@@ -1784,18 +1799,21 @@ If we want to create a mutable string  that needs to be modified during run time
 of the program, use the `“String”` type instead of a `string literal`.
 
 There are multiple ways of creating a string literal as under:
+> `String::from("data here")`   - For `String` that takes text and creates string.
+> `"data here".to_string()`     - For `&str` that makes it into a `String`.
+> `format!` macro               - For creating a string without printing.
+
+
 ```rust
 // Creating an empty string
 let mut s = String::new();
 
-// Converting as string literal to a String
+// Converting a string literal (&str) to a String
 let s = "initial contents".to_string();
 
-// Same as above, but different syntax
+// Same as above, but using different syntax
 let s = String::from("initial contents");
-```
 
-```rust
 fn main() {
     let mut s = "Hello".to_string(); // mut s: String
     println!("{}", s);
@@ -1806,6 +1824,7 @@ fn main() {
 ```
 
 Let's check the types of values for each for below program:
+
 ```rust
 fn main() {
     let s1 = String::from("abcdefghijk");   // utf-8 encoded string
@@ -1836,12 +1855,13 @@ type of s4 alloc::string::String
 type of s5 &str
 ```
 
-
 ## String vs &str in Rust functions
-Both `String` and `&str` provide a read-only reference to the text data. The `&str` type which is called as *String slice* allows us to refer to the text data in `Data Segment` without `Heap` memory allocation, and hence are slightly more performant than the `String literals` denoted by `String`.
+Both `String` and `&str` provide a read-only reference to the text data. The `&str` type which is called as *string slice* allows us to refer to the text data in `Data Segment` without `Heap` memory allocation, and hence are slightly more performant than the `String literals` denoted by `String`.
 
-> `&str` is a *Stack* allocated UTF-8 string, which can be borrowed but cannot be moved or mutated.
-> `String` is a *Heap* allocated UTF-8 string which can be borrowed or mutated.
+| **Type**  | **Description**                                                                               |
+|-----------|-----------------------------------------------------------------------------------------------|
+| `&str`    | It is *Stack* allocated `utf-8` string which can be borrowed but cannot be moved or mutated   |
+| `String`  | It is a *Heap* allocated `utf-8` string which can be borrowed or mutated.                     |
 
 So, essentially below snippet can be replaced
 
@@ -2035,15 +2055,31 @@ fn main() {
 ```
 
 ## Iterator functions
+Rust provides three ways to iterate over collections
+- `iter()`,
+- `into_iter()`, and
+- `iter_mut()`.
 
-| Function      | Description                                                                           |
-|---------------|---------------------------------------------------------------------------------------|
-| `iter()`      | The iterator will give a *read-only* reference to each element                        |
-| `iter_mut()`  | The iterator will give a *mutable* reference to each element                          |
-| `into_iter()` | The iterator will give *ownership* of each element uless called in `ref` to a `vector`|
+Each of these methods have different ownership semantics which affects how the original collection can be used afterward.
+
+| Method        | Description                                                                            |
+|---------------|----------------------------------------------------------------------------------------|
+| `iter()`      | The iterator will give a *read-only* reference to each element                         |
+| `iter_mut()`  | The iterator will give a *mutable* reference to each element                           |
+| `into_iter()` | The iterator will give *ownership* of each element unless called in `ref` to a `vector`|
+
+
+Understanding the differences between these methods is important for writing correct and efficient `Rust` code.
+
+| *Method*      | *Yields*  | *Ownership*       | *Collection After*    |
+|---------------|-----------|-------------------|-----------------------|
+| `iter()`      | `&T`      | _BORROWS_         | _STILL USABLE_        |
+| `iter_mut()`  | `&mut T`  | _MUTABLY BORROWS_ | _STILL USABLE_        |
+| `into_iter()` | `T`       | _CONSUMES_        | _UNUSABLE_            |
 
 
 # Some examples
+Here are few examples covering the scenarios where these methods are used.
 
 ```rust
 // iter()
@@ -2051,6 +2087,7 @@ let v1 = vec![1, 2, 3];
 let mut v2 = vec![4, 5, 6];
 
 /// Here, after using iter() v1 is not destroyed and still available
+/// iter() - borrows each element
 for i in v1.iter() {
     println!("&i32: {i}");
 }
@@ -2062,6 +2099,7 @@ for i in v1 {
 
 /// Here, using iter_mut() we are looping over mutable references
 /// so v2 still persists after it is done
+/// iter_mut() - mutably borrows each element
 for i in v2.iter_mut() {
     *i *= 2;
     println!("i is now: {i}");
@@ -2069,7 +2107,30 @@ for i in v2.iter_mut() {
 
 /// still able to access v2 here, but v1 is not available
 println!("{v2:?}");
+
+/// into_iter() - takes ownership of each element
+let owned = vec![1, 2, 3, 4, 5];
+for i in owned.into_iter() {
+    println!("Owned: {}", i);  // i is i32
+}
+
+/// This will not work now
+// println!("{:?}", owned);  // Error: owned was moved
+
+/// Another example for into_iter()
+let a = vec![1,2,3];
+let b = vec![4,5,6];
+println!("Combined: {:?}", a.into_iter().chain(b.into_iter()).collect::<Vec<i32>>());
+
+/// This will print [1, 2, 3, 4, 5, 6]
+/// a and b are not available after this
 ```
+
+> [!TIP]
+> Use `iter()` when you only need to read values and want to keep the collection.
+> Use `iter_mut()` when you need to modify elements in place.
+> Use `into_iter()` when you want to consume the collection or need ownership of elements.
+
 
 An example using `if-else-if` for pattern matching:
 
@@ -2355,7 +2416,7 @@ In `Rust` there is a way to safely change values inside a `struct` without quali
 - `RwLock`
 
 # Cow
-The abbreviation `Cow` stands for "clone-to-write" and is an `enum` of convenience. It is a smart pointer and is a convenient wrapper that allows us to express the idea of optional ownership in `Rust`. One of the striking features of `Cow` is that it only __clones__ the data when __mutation__ is necessary, making it particularly useful in optimizing the performance by avoiding unecessary allocations.
+The abbreviation `Cow` stands for "Clone On Write" and is an `enum` of convenience. It is a smart pointer and is a convenient wrapper that allows us to express the idea of optional ownership in `Rust`. One of the striking features of `Cow` is that it only __clones__ the data when __mutation__ is required, making it particularly useful in optimizing the performance by avoiding unnecessary allocations.
 
 Since it is an `enum`, it has few values associated with it; which are the two states of the `enum`:
 
@@ -2363,7 +2424,7 @@ Since it is an `enum`, it has few values associated with it; which are the two s
 > + `Borrowed`
 > + `Owned`
 
-It is inside the `std::borrow` module providing a clever way of handling both __borrowed__ and __owned__ data with the same *interface*.
+It is inside the `std::borrow` module providing a clever way of handling both __borrowed__ and __owned__ data using the same *interface*.
 
 Here is how it is defined:
 ```rust
@@ -2489,10 +2550,14 @@ The example shows `remove_sensitive_word` and `remove_sensitive_word_old` implem
 While designing and writing `Rust` code, using `Cow` can achieve memory allocation and copying only when needed. In scenarios where there are more reads than writes, the number of heap memory allocations can be reduced, greatly improving system efficiency.
 
 # Anonymous functions or Closures in Rust
-`Closures` in `Rust` are `Anonymous functions` which have the flexibility to be saved to a variable or pass in as arguments to other functions. They are similar to functions, but with added capability to capture variables from their surrounding environment and use them. They are very flexible and can be used in place where regular function pointers are used. Because of the flexibility to use variables from it's surroundings, `Closures` can reference and use variables defined outside pf *scope*.
+`Anonymous functions` and `Closures` are similar with the flexibility to be saved to a variable or be passed in as arguments to other functions. They are similar to functions, but with added capability to capture variables from their surrounding environment and use them. They are very flexible and can be used in place where regular function pointers are used. Because of the flexibility to use variables from it's surroundings, `Closures` can reference and use variables defined outside of *scope*.
+
+They have a subtle difference when viewed at a microscopic level:
++ A `||` which does not enclose a variable from outside is an `Anonymous function`.
++ A `||` that encloses a variable from outside is also anonymous but called a `Closure`.
 
 ## Capturing variables in closures
-`Closures` do not capture all variables from their surrounding environment in the same pattern. The capture behaviour is defined by particular trait` that `closure` implements and there are *3* such `traits` as below with their hierarchy from top to bottom during compile time.
+`Closures` do not capture all variables from their surrounding environment in the same pattern. The capture behaviour is defined by particular `trait` that `closure` implements and there are *3* such `traits` as below with their hierarchy from top to bottom during compile time.
 
 
 | Trait    | Functionality                 |
@@ -2507,7 +2572,7 @@ While designing and writing `Rust` code, using `Cow` can achieve memory allocati
 > often discussed in terms of the above `traits` they implement.
 
 ## Understanding the closure traits
-Based on how the `closure` uses captured variables, the `Rust` compiler automatically assigns one of the three `traits` Depending on how a `closure` captures variables, it may be called more than once or only once whether mutably or immutably.
+Based on how the `closure` use captured variables, the `Rust` compiler automatically assigns one of the three `traits` Depending on how a `closure` captures variables, it may be called more than once or only once whether <u>mutably</u> or <u>immutably</u>.
 
 >[!NOTE]
 > All `closures` implement the `FnOnce` trait, meanning they can all be called at least once.
@@ -2649,12 +2714,12 @@ From the hierarchy above, we can have the following patterns:
 
 Example for Case (1):
 ```rust
-// This function expecte a closure that implements Fn trait
+// This function expects a closure that implements Fn trait
 fn call_fn<F: Fn() -> i32>(f: F) {
     println!("Fn called: {}", f());
 }
 
-// This function expecte a closure that implements FnMut trait
+// This function expects a closure that implements FnMut trait
 fn call_fn_mut<F: FnMut() -> i32>(mut f: F) {
     println!("FnMut called: {}", f());
 }
@@ -2809,7 +2874,7 @@ fn main() {
 }
 ```
 
-Example with closure implementing `FnMul` and consuming variables:
+Example with closure implementing `FnMut` and consuming variables:
 ```rust
 // Trait hierarchy
 // Fn -> FnMut -> FnOnce
@@ -3034,7 +3099,9 @@ When it is mentioned that `Rust` macro's are hygenic, it means that the variable
 >   c. Attribute macros
 
 ## Declarative Macros with macro_rules!
-Declarative macros use pattern matching to transform code and they are defined using the `macro_rules!` syntax as below:
+Declarative macros are defined using the `macro_rules!` and they are called `declarative` because of the declared _patterbs_ and their _expansions_. `macro_rules!` does in place code expansion during compilation and work by pattern matching on tokens.
+
+They have the below syntax:
 ```rust
 /// here is the syntax to declare macros in rust
 macro_rules! a_macro {
@@ -3058,14 +3125,17 @@ Here is the standard format of a declarative macro matching these rules:
 
 ```bash
 macro_rules! <macro_name> {
+    // rule 1
     (<first_matcher_rule>) => {
         <first_transcriber_rule>
     };
     
+    // rule 2
     (second_matcher_rule>) => {
         <second_transcriber_rule>
     };
     // ...
+    // rule n
     (nth_matcher_rule>) => {
         <nth_transcriber_rule>
     };
@@ -3097,22 +3167,23 @@ If the input matches the _matcher_, the invocation is replaced by the expansion;
 `Matchers` can also contain `captures`, which allow input to be matched based on some general grammar rules, with the result captured to a metavariable which can then be substituted into the output. `Captures` are written as a dollar (`$`) followed by an identifier, a colon (`:`), and finally the kind of capture which is also called the `fragment-specifier`, which must be one of the following:
 
 
-| **Type Specifier** | **Description**                                                     |
-|--------------------|---------------------------------------------------------------------|
-| `expr`             | An expression (e.g., `1 + 2`, `foo()`, `bar.baz`, `vec![1,2,3]`)    |
-| `ident`            | An identifier (e.g., `variable names`, `function names`)            |
-| `literal`          | A literal value (e.g., `42`, `"hello"`, `true`)                     |
-| `ty`               | A type (e.g., `i32`, `String`, `Vec<T>`)                            |
-| `pat`              | A pattern (e.g., `Some(x)`, `_`, `1..=9`)                           |
-| `path`             | A path (e.g., `std::collections::HashMap`)                          |
-| `stmt`             | A statement (e.g., `let x = 1;`)                                    |
-| `block`            | A block of code (e.g., `{ println!("hello"); }`)                    |
-| `item`             | An item (e.g., `functions`, `structs`, `modules`)                   |
-| `meta`             | Meta information (e.g., `attributes`)                               |
-|                    | `derive(Debug, Clone)`, `name = "value"`                            |
-| `tt`               | A single token tree. (e.g., Any token or `(...)`, `[...]`, `{...}`) |
-| `lifetime`         | A lifetime token (e.g., `'a`, `'static`)                            |
-| `vis`              | A visibility qualifier (can be empty) (e.g., `pub`, `pub(crate)`)   |
+| **Fragment Specifier** | **Description**                                                         |
+|------------------------|---------------------------------------------------------------------    |
+| `expr`                 | An expression (e.g., `1 + 2`, `foo()`, `bar.baz`, `vec![1,2,3]`)        |
+| `ident`                | An identifier (e.g., `variable names`, `function names`)                |
+| `literal`              | A literal value (e.g., `42`, `"hello"`, `true`)                         |
+| `ty`                   | A type (e.g., `i32`, `String`, `Vec<T>`)                                |
+| `pat`                  | A pattern (e.g., `Some(x)`, `_`, `1..=9`)                               |
+| `path`                 | A path (e.g., `std::collections::HashMap`)                              |
+| `stmt`                 | A statement (e.g., `let x = 1;`)                                        |
+| `block`                | A block of code (e.g., `{ println!("hello"); }`)                        |
+| `item`                 | An item (e.g., `functions`, `structs`, `modules`)                       |
+| `meta`                 | Meta information (e.g., `attributes`)                                   |
+|                        | `derive(Debug, Clone)`, `name = "value"`                                |
+| `tt`                   | A single token (`identifier`,`literal`,`punctuation`) or a group formed |
+|                        | by pair of delimiters `(...)`,`[...]`,`{...}` with inner token stream   |
+| `lifetime`             | A lifetime token (e.g., `'a`, `'static`)                                |
+| `vis`                  | A visibility qualifier (can be empty) (e.g., `pub`, `pub(crate)`)       |
 
 
 ## Repetitions
@@ -3120,10 +3191,12 @@ If the input matches the _matcher_, the invocation is replaced by the expansion;
 + `$`
 + `( ... )`
 + `sep`
-+ `rep` - this is the required repeat operator which can have below:
++ `rep` - this is the required repeat operator (transcirber) which can have below:
     - `?`: indicating at most one repetition
     - `*`: indicating zero or more repetitions
     - `+`: indicating one or more repetitions
+
+The typical pattern for repetition would be: `$(<metavariable>)[delimiter]<*|?|+>`
 
 >[!IMPORTANT]
 > `?` represents at most one occurrence, it cannot be used with a separator.
@@ -3328,6 +3401,9 @@ cargo expand
 # Resources
 Some interesting links for `Rust`
 
+[A book about Rust Data Structures and Algorithms]: https://github.com/QMHTMY/RustBook.git
+[Algorithms in Rust]: https://github.com/TheAlgorithms/Rust.git
+[Rust Training]: https://github.com/Tritlo/rusttraining/tree/main
 [15 Rust Projects]: https://codecrafters.io/blog/rust-projects
 [Rust Cheat Sheet]: https://cheats.rs
 [RustLabs Quickstart]: https://rustlabs.github.io/docs/rust101
@@ -3344,3 +3420,4 @@ Some interesting links for `Rust`
 # References
 [1]: https://doc.rust-lang.org/std/primitive.bool.html
 [2]: https://rustwiki.org/en/
+[3]: https://github.com/Dhghomon/easy_rust/
